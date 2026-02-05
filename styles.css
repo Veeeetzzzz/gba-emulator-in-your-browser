@@ -1,0 +1,363 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  /* Default: Indigo (the original GBA color) */
+  --shell: #3b2f7e;
+  --shell-light: #5040a0;
+  --shell-dark: #2a1f60;
+  --btn-face: #4a3d8c;
+  --btn-dpad: #2d2260;
+  --btn-dpad-center: #231952;
+  --shoulder: #50409a;
+  --ab-a: #7b4aa0;
+  --ab-b: #6838a0;
+  --pill: #5040a0;
+  --pill-text: #e4daf7;
+  --text: #c8bef0;
+  --text-dim: #9488c0;
+  --bezel-ring: #4a3d8c;
+  --logo-color: #9488c0;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  background: #0f1117;
+  color: #eef1f7;
+}
+
+.page {
+  display: grid;
+  gap: 32px;
+  padding: 32px 20px 60px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.hero {
+  display: grid;
+  gap: 14px;
+  text-align: center;
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: 2.2rem;
+}
+
+.subtitle {
+  margin: 0;
+  color: #b9c2d0;
+}
+
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #1e2432;
+  color: #f8faff;
+  font-size: 0.85rem;
+}
+
+.drop-zone {
+  margin: 0 auto;
+  width: min(520px, 90vw);
+  border: 2px dashed #3a4356;
+  border-radius: 18px;
+  padding: 22px;
+  background: #141824;
+  cursor: pointer;
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.drop-zone.is-dragover {
+  border-color: #5e8bff;
+  background: #192137;
+}
+
+.drop-zone__icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  background: #212a3f;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.drop-zone__text {
+  font-size: 1rem;
+}
+
+.drop-zone__hint {
+  font-size: 0.85rem;
+  color: #96a0b3;
+}
+
+.drop-zone .link {
+  color: #7aa2ff;
+  text-decoration: underline;
+}
+
+.status {
+  font-size: 0.95rem;
+  color: #9cb1ff;
+}
+
+/* ── Color picker ─────────────────────────── */
+.color-picker {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.color-swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.15s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.color-swatch:hover {
+  transform: scale(1.15);
+}
+
+.color-swatch.active {
+  border-color: #fff;
+  transform: scale(1.15);
+}
+
+/* ── Console shell ────────────────────────── */
+.console {
+  display: grid;
+  justify-items: center;
+}
+
+.gba {
+  width: min(580px, 95vw);
+  background: var(--shell);
+  color: var(--text);
+  padding: 28px 26px 22px;
+  border-radius: 32px 32px 32px 32px;
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+  position: relative;
+  transition: background 0.3s;
+}
+
+/* ── Screen ───────────────────────────────── */
+.screen-bezel {
+  background: #111318;
+  border-radius: 16px;
+  padding: 14px;
+  display: grid;
+  place-items: center;
+  box-shadow: inset 0 0 0 2px var(--bezel-ring);
+  transition: box-shadow 0.3s;
+}
+
+#screen {
+  display: block;
+  width: 480px;    /* 240 x 2 = exact 2x scale for crisp pixels */
+  height: 320px;   /* 160 x 2 */
+  max-width: 100%;
+  background: #000;
+  border-radius: 6px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* ── Top controls (shoulders + logo) ──────── */
+.top-controls {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  font-size: 0.75rem;
+  letter-spacing: 0.22em;
+  color: var(--logo-color);
+  font-weight: 700;
+  text-transform: uppercase;
+  transition: color 0.3s;
+}
+
+.shoulder {
+  justify-self: center;
+  padding: 6px 20px;
+  border-radius: 999px;
+  border: none;
+  background: var(--shoulder);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+/* ── D-pad + face buttons row ─────────────── */
+.control-row {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 16px;
+}
+
+.dpad {
+  width: 140px;
+  height: 140px;
+  position: relative;
+  justify-self: center;
+}
+
+.dpad-btn {
+  position: absolute;
+  width: 46px;
+  height: 46px;
+  border-radius: 10px;
+  border: none;
+  background: var(--btn-dpad);
+  color: #d0c9f0;
+  font-size: 0.95rem;
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.dpad-btn.up    { top: 0;    left: 47px; }
+.dpad-btn.down  { bottom: 0; left: 47px; }
+.dpad-btn.left  { left: 0;   top: 47px;  }
+.dpad-btn.right { right: 0;  top: 47px;  }
+
+.dpad-center {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background: var(--btn-dpad-center);
+  border-radius: 8px;
+  top: 45px;
+  left: 45px;
+  transition: background 0.3s;
+}
+
+.face-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  transform: rotate(-25deg);
+}
+
+.face-btn {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  border: none;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.face-btn.b { background: var(--ab-b); }
+.face-btn.a { background: var(--ab-a); }
+
+/* ── Start / Select ───────────────────────── */
+.bottom-controls {
+  margin-top: 22px;
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+}
+
+.pill-btn {
+  padding: 8px 20px;
+  border-radius: 999px;
+  border: none;
+  background: var(--pill);
+  color: var(--pill-text);
+  font-weight: 700;
+  font-size: 0.8rem;
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+}
+
+.helper {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  transition: color 0.3s;
+}
+
+button:active,
+button.active {
+  transform: translateY(2px);
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* ── Mobile tweaks ────────────────────────── */
+@media (max-width: 620px) {
+  .gba {
+    padding: 22px 14px 18px;
+    border-radius: 24px;
+  }
+
+  #screen {
+    width: 100%;
+    height: auto;
+  }
+
+  .dpad {
+    width: 120px;
+    height: 120px;
+  }
+
+  .dpad-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 0.85rem;
+  }
+
+  .dpad-btn.up    { left: 40px; }
+  .dpad-btn.down  { left: 40px; }
+  .dpad-btn.left  { top: 40px;  }
+  .dpad-btn.right { top: 40px;  }
+
+  .dpad-center {
+    width: 44px;
+    height: 44px;
+    top: 38px;
+    left: 38px;
+  }
+
+  .face-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 1rem;
+  }
+
+  .control-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+}

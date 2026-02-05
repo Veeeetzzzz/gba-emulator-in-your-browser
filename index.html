@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GBA Emulator</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero">
+        <h1>Game Boy Advance Emulator</h1>
+        <p class="subtitle">
+          Drag and drop a legally backed up <span class="tag">.gba</span> ROM
+          to start playing in your browser.
+        </p>
+        <div
+          id="drop-zone"
+          class="drop-zone"
+          role="button"
+          tabindex="0"
+          aria-label="Upload ROM file"
+        >
+          <div class="drop-zone__icon">ROM</div>
+          <div class="drop-zone__text">
+            Drop ROM here or <span class="link">browse</span>
+          </div>
+          <div class="drop-zone__hint">Only .gba files are supported.</div>
+        </div>
+        <input id="rom-input" type="file" accept=".gba" hidden />
+        <div id="status" class="status">No ROM loaded.</div>
+
+        <div class="color-picker" id="color-picker">
+          <div class="color-swatch active" data-color="indigo"     style="background:#3b2f7e" title="Indigo"></div>
+          <div class="color-swatch"        data-color="black"      style="background:#1e1e24" title="Black"></div>
+          <div class="color-swatch"        data-color="white"      style="background:#d9dce6" title="White"></div>
+          <div class="color-swatch"        data-color="glacier"    style="background:#92b8d8" title="Glacier"></div>
+          <div class="color-swatch"        data-color="arctic"     style="background:#7ec4dd" title="Arctic"></div>
+          <div class="color-swatch"        data-color="fuchsia"    style="background:#b8388a" title="Fuchsia"></div>
+          <div class="color-swatch"        data-color="flame"      style="background:#c53030" title="Flame"></div>
+          <div class="color-swatch"        data-color="orange"     style="background:#dd7e2a" title="Orange"></div>
+          <div class="color-swatch"        data-color="spice"      style="background:#c05828" title="Spice"></div>
+          <div class="color-swatch"        data-color="gold"       style="background:#c8a830" title="Gold"></div>
+          <div class="color-swatch"        data-color="platinum"   style="background:#9a9eac" title="Platinum"></div>
+          <div class="color-swatch"        data-color="midnight"   style="background:#1a2248" title="Midnight Blue"></div>
+        </div>
+      </section>
+
+      <section class="console">
+        <div class="gba">
+          <div class="screen-bezel">
+            <canvas id="screen" width="240" height="160"></canvas>
+          </div>
+
+          <div class="top-controls">
+            <button class="shoulder left" data-key="l">L</button>
+            <div class="logo">GAME BOY ADVANCE</div>
+            <button class="shoulder right" data-key="r">R</button>
+          </div>
+
+          <div class="control-row">
+            <div class="dpad">
+              <button class="dpad-btn up" data-key="up">▲</button>
+              <button class="dpad-btn left" data-key="left">◀</button>
+              <button class="dpad-btn right" data-key="right">▶</button>
+              <button class="dpad-btn down" data-key="down">▼</button>
+              <div class="dpad-center"></div>
+            </div>
+
+            <div class="face-buttons">
+              <button class="face-btn b" data-key="b">B</button>
+              <button class="face-btn a" data-key="a">A</button>
+            </div>
+          </div>
+
+          <div class="bottom-controls">
+            <button class="pill-btn" data-key="select">Select</button>
+            <button class="pill-btn" data-key="start">Start</button>
+          </div>
+
+          <div class="helper">
+            Keyboard: arrows, Z (B), X (A), Enter (Start), Shift (Select), A/S
+            (L/R)
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="gba-core.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
