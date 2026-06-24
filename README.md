@@ -1,12 +1,13 @@
-# Gameboy Advance Emulator
+# GBA Emulator In Browser
 
-https://github.com/user-attachments/assets/d7dcaea6-a630-47f0-8ef1-7fbca7b74100
+This is a static browser app. It does not require Node.js, npm, a build step, or a local server.
 
-## Instructions
+Open `index.html` in a browser and load a legally backed up `.gba` ROM using the file picker or drag-and-drop area.
 
-#### Download this repository
+## Files
 
-<img width="1065" height="463" alt="image" src="https://github.com/user-attachments/assets/e5800002-c684-40bf-a20d-321938686c6a" />
+- `index.html` - page markup and script/style references.
+- `styles.css` - app styling.
+- `gba-core.js` - vendored browser bundle for the GBA emulator core.
+- `app.js` - UI, ROM loading, controls, and emulator wiring.
 
-
-#### Open index.html -> load your legally backed up .GBA file.
