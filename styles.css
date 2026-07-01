@@ -361,3 +361,71 @@ button.active {
     gap: 8px;
   }
 }
+
+.rom-library {
+  width: min(520px, 90vw);
+  margin: 0 auto;
+  border: 1px solid #283248;
+  border-radius: 12px;
+  background: #121722;
+  overflow: hidden;
+  text-align: left;
+}
+
+.rom-library__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #283248;
+  color: #e8edf7;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.rom-library__count {
+  color: #96a0b3;
+  font-weight: 600;
+}
+
+.rom-list {
+  display: grid;
+  max-height: 168px;
+  overflow-y: auto;
+}
+
+.rom-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-bottom: 1px solid #20293b;
+  background: transparent;
+  color: #d9e0ee;
+  text-align: left;
+  cursor: pointer;
+}
+
+.rom-item:last-child {
+  border-bottom: 0;
+}
+
+.rom-item:hover,
+.rom-item.is-selected {
+  background: #1a2233;
+}
+
+.rom-item__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rom-item__meta {
+  color: #96a0b3;
+  font-size: 0.78rem;
+}

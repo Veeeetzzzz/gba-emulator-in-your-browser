@@ -2,12 +2,20 @@
 
 var dropZone = document.getElementById("drop-zone");
 var romInput = document.getElementById("rom-input");
+var romLibraryEl = document.getElementById("rom-library");
+var romListEl = document.getElementById("rom-list");
+var romCountEl = document.getElementById("rom-count");
 var statusEl = document.getElementById("status");
 var canvas = document.getElementById("screen");
 
 var gba = null;
 var romLoaded = false;
 var frameCount = 0;
+var emulatorPatchesInstalled = false;
+var romLibrary = [];
+var activeRomId = null;
+var romSequence = 0;
+var romLoadSequence = 0;
 
 function setStatus(message, isError) {
   statusEl.textContent = message;
@@ -32,6 +40,51 @@ function ensureCoreReady() {
   return true;
 }
 
+function isGbaFile(file) {
+  return file && file.name && file.name.toLowerCase().endsWith(".gba");
+}
+
+function formatFileSize(bytes) {
+  if (bytes < 1024 * 1024) {
+    return Math.max(1, Math.round(bytes / 1024)) + " KB";
+  }
+  return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+}
+
+function installEmulatorDiagnostics() {
+  if (emulatorPatchesInstalled) {
+    return;
+  }
+
+  var Emu = window.IodineGBA && window.IodineGBA.Emulator;
+  if (!Emu || !Emu.prototype) {
+    return;
+  }
+
+  if (Emu.prototype.timerCallback) {
+    var origTimer = Emu.prototype.timerCallback;
+    Emu.prototype.timerCallback = function () {
+      try {
+        origTimer.call(this);
+      } catch (err) {
+        this.faultFound = true;
+        setStatus("EMU CRASH: " + (err.stack || err.message), true);
+        console.error("GBA emulator crash in timerCallback:", err);
+      }
+    };
+  }
+
+  if (Emu.prototype.prepareFrame) {
+    var origPrepareFrame = Emu.prototype.prepareFrame;
+    Emu.prototype.prepareFrame = function () {
+      frameCount++;
+      origPrepareFrame.call(this);
+    };
+  }
+
+  emulatorPatchesInstalled = true;
+}
+
 function loadRomFile(file) {
   if (!file) {
     return;
@@ -39,14 +92,20 @@ function loadRomFile(file) {
   if (!ensureCoreReady()) {
     return;
   }
-  if (!file.name.toLowerCase().endsWith(".gba")) {
+  if (!isGbaFile(file)) {
     setStatus("Please select a .gba ROM file.", true);
     return;
   }
 
+  var loadId = ++romLoadSequence;
   var reader = new FileReader();
   reader.onload = function () {
+    if (loadId !== romLoadSequence) {
+      return;
+    }
+
     try {
+      frameCount = 0;
       var data = new Uint8Array(reader.result);
       gba.attachROM(data);
       // Provide a blank 16 KB BIOS buffer (required by the core).
@@ -54,30 +113,7 @@ function loadRomFile(file) {
       // patches in gba-core.js so no real BIOS ROM is needed.
       gba.attachBIOS(new Uint8Array(16384));
       gba.enableSkipBootROM();
-
-      // Monkey-patch the timerCallback to capture silent crashes
-      var Emu = window.IodineGBA && window.IodineGBA.Emulator;
-      if (Emu && Emu.prototype && Emu.prototype.timerCallback) {
-        var origTimer = Emu.prototype.timerCallback;
-        Emu.prototype.timerCallback = function () {
-          try {
-            origTimer.call(this);
-          } catch (err) {
-            this.faultFound = true;
-            setStatus("EMU CRASH: " + (err.stack || err.message), true);
-            console.error("GBA emulator crash in timerCallback:", err);
-          }
-        };
-      }
-
-      // Monkey-patch prepareFrame to count rendered frames
-      var origPrepareFrame = Emu && Emu.prototype.prepareFrame;
-      if (origPrepareFrame) {
-        Emu.prototype.prepareFrame = function () {
-          frameCount++;
-          origPrepareFrame.call(this);
-        };
-      }
+      installEmulatorDiagnostics();
 
       gba.play();
       romLoaded = true;
@@ -85,6 +121,7 @@ function loadRomFile(file) {
 
       // Clear status after 3s if running OK
       setTimeout(function () {
+        if (loadId !== romLoadSequence) return;
         if (!gba || !gba.IOCore) return;
         if (frameCount > 10) {
           setStatus("", false);  // All good — hide status
@@ -122,6 +159,83 @@ function loadRomFile(file) {
   reader.readAsArrayBuffer(file);
 }
 
+function renderRomLibrary() {
+  romListEl.textContent = "";
+  romLibraryEl.hidden = romLibrary.length === 0;
+  romCountEl.textContent = romLibrary.length + " selected";
+
+  romLibrary.forEach(function (entry) {
+    var button = document.createElement("button");
+    var name = document.createElement("span");
+    var meta = document.createElement("span");
+
+    button.type = "button";
+    button.className = "rom-item";
+    button.setAttribute("role", "option");
+    button.setAttribute(
+      "aria-selected",
+      entry.id === activeRomId ? "true" : "false"
+    );
+    if (entry.id === activeRomId) {
+      button.classList.add("is-selected");
+    }
+
+    name.className = "rom-item__name";
+    name.textContent = entry.file.name;
+    meta.className = "rom-item__meta";
+    meta.textContent = formatFileSize(entry.file.size);
+
+    button.appendChild(name);
+    button.appendChild(meta);
+    button.addEventListener("click", function () {
+      activeRomId = entry.id;
+      renderRomLibrary();
+      loadRomFile(entry.file);
+    });
+
+    romListEl.appendChild(button);
+  });
+}
+
+function addRomFiles(files) {
+  if (!files || files.length === 0) {
+    return;
+  }
+
+  var firstAdded = null;
+  var rejected = 0;
+
+  Array.prototype.forEach.call(files, function (file) {
+    if (!isGbaFile(file)) {
+      rejected++;
+      return;
+    }
+
+    romSequence++;
+    var entry = {
+      id: "rom-" + romSequence,
+      file: file
+    };
+    romLibrary.push(entry);
+    if (!firstAdded) {
+      firstAdded = entry;
+    }
+  });
+
+  if (!firstAdded) {
+    setStatus("Please select at least one .gba ROM file.", true);
+    return;
+  }
+
+  activeRomId = firstAdded.id;
+  renderRomLibrary();
+  loadRomFile(firstAdded.file);
+
+  if (rejected > 0) {
+    setStatus("Skipped " + rejected + " unsupported file(s).", true);
+  }
+}
+
 // Global error handler to catch uncaught exceptions from setInterval
 window.addEventListener("error", function (event) {
   // Ignore errors from browser extensions
@@ -140,8 +254,7 @@ window.addEventListener("error", function (event) {
 function handleDrop(event) {
   event.preventDefault();
   dropZone.classList.remove("is-dragover");
-  var file = event.dataTransfer.files[0];
-  loadRomFile(file);
+  addRomFiles(event.dataTransfer.files);
 }
 
 dropZone.addEventListener("click", function () {
@@ -167,8 +280,7 @@ dropZone.addEventListener("dragleave", function () {
 dropZone.addEventListener("drop", handleDrop);
 
 romInput.addEventListener("change", function () {
-  var file = romInput.files[0];
-  loadRomFile(file);
+  addRomFiles(romInput.files);
   romInput.value = "";
 });
 

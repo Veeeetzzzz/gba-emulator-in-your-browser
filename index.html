@@ -23,11 +23,18 @@
         >
           <div class="drop-zone__icon">ROM</div>
           <div class="drop-zone__text">
-            Drop ROM here or <span class="link">browse</span>
+            Drop ROMs here or <span class="link">browse</span>
           </div>
-          <div class="drop-zone__hint">Only .gba files are supported.</div>
+          <div class="drop-zone__hint">Select one or more .gba files.</div>
         </div>
-        <input id="rom-input" type="file" accept=".gba" hidden />
+        <input id="rom-input" type="file" accept=".gba" multiple hidden />
+        <div id="rom-library" class="rom-library" hidden>
+          <div class="rom-library__header">
+            <span>ROMs</span>
+            <span id="rom-count" class="rom-library__count">0 selected</span>
+          </div>
+          <div id="rom-list" class="rom-list" role="listbox" aria-label="Selected ROMs"></div>
+        </div>
         <div id="status" class="status">No ROM loaded.</div>
 
         <div class="color-picker" id="color-picker">

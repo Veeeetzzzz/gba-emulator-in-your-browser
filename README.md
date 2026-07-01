@@ -2,7 +2,7 @@
 
 This is a static browser app. It does not require Node.js, npm, a build step, or a local server.
 
-Open `index.html` in a browser and load a legally backed up `.gba` ROM using the file picker or drag-and-drop area.
+Open `index.html` in a browser and load one or more legally backed up `.gba` ROMs using the file picker or drag-and-drop area.
 
 ## Files
 
@@ -10,4 +10,3 @@ Open `index.html` in a browser and load a legally backed up `.gba` ROM using the
 - `styles.css` - app styling.
 - `gba-core.js` - vendored browser bundle for the GBA emulator core.
 - `app.js` - UI, ROM loading, controls, and emulator wiring.
-
